@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Start Quiz</title>
+    <meta charset="UTF-8">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 th:text="${quiz.title}"></h2>
+            <small class="text-muted">
+                Category: <span th:text="${quiz.category}"></span> |
+                Level: <span th:text="${quiz.difficulty}"></span>
+            </small>
+        </div>
+
+        <h4 class="text-danger">
+            ⏰ Time Left: <span id="timer"></span>
+        </h4>
+    </div>
+
+    <!-- Quiz Form -->
+    <form th:action="@{/quiz/submit}" method="post" id="quizForm">
+
+        <!-- Hidden Quiz ID -->
+        <input type="hidden" name="quizId" th:value="${quiz.id}"/>
+
+        <!-- Questions -->
+        <div th:each="q, stat : ${questions}" class="card mb-3 shadow-sm p-3">
+
+            <p class="fw-bold">
+                Q<span th:text="${stat.index + 1}"></span>.
+                <span th:text="${q.questionText}"></span>
+            </p>
+
+            <!-- Option 1 -->
+            <div class="form-check">
+                <input class="form-check-input" type="radio"
+                       th:name="'answers[' + ${q.id} + ']'"
+                       th:value="${q.option1}">
+                <label class="form-check-label" th:text="${q.option1}"></label>
+            </div>
+
+            <!-- Option 2 -->
+            <div class="form-check">
+                <input class="form-check-input" type="radio"
+                       th:name="'answers[' + ${q.id} + ']'"
+                       th:value="${q.option2}">
+                <label class="form-check-label" th:text="${q.option2}"></label>
+            </div>
+
+            <!-- Option 3 -->
+            <div class="form-check">
+                <input class="form-check-input" type="radio"
+                       th:name="'answers[' + ${q.id} + ']'"
+                       th:value="${q.option3}">
+                <label class="form-check-label" th:text="${q.option3}"></label>
+            </div>
+
+            <!-- Option 4 -->
+            <div class="form-check">
+                <input class="form-check-input" type="radio"
+                       th:name="'answers[' + ${q.id} + ']'"
+                       th:value="${q.option4}">
+                <label class="form-check-label" th:text="${q.option4}"></label>
+            </div>
+
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn-success w-100 mt-3">
+            Submit Quiz
+        </button>
+
+    </form>
+</div>
+
+<!-- TIMER SCRIPT -->
+<script th:inline="javascript">
+    let timeLeft = [[${totalTime}]]; // seconds
+
+    function startTimer() {
+        const timerEl = document.getElementById("timer");
+
+        const interval = setInterval(() => {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+
+            timerEl.innerText =
+                String(minutes).padStart(2, '0') + ":" +
+                String(seconds).padStart(2, '0');
+
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                alert("Time is up! Submitting quiz.");
+                document.getElementById("quizForm").submit();
+            }
+
+            timeLeft--;
+        }, 1000);
+    }
+
+    startTimer();
+</script>
+
+</body>
+</html>
